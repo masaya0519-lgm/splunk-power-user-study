@@ -181,4 +181,199 @@ export const correlatingEventsQuestions: Question[] = [
     reference: 'Splunk Docs: stats command - statistical functions',
     difficulty: 'hard',
   },
+  {
+    id: 'ce-013',
+    domainId: 'correlating-events',
+    stem: '`transaction` コマンドの `maxpause` オプションが制御するのはどれか？',
+    choices: [
+      { key: 'A', text: '同一トランザクション内の連続するイベント間の最大時間間隔', isCorrect: true },
+      { key: 'B', text: 'トランザクション全体の最大継続時間', isCorrect: false },
+      { key: 'C', text: '異なるトランザクション間の最大間隔', isCorrect: false },
+      { key: 'D', text: 'サーチが一時停止するまでの最大時間', isCorrect: false },
+    ],
+    explanation:
+      '`maxpause` はトランザクション内の連続するイベント間の最大時間間隔を指定します。例: `maxpause=30s` では前のイベントから30秒以上間隔が空くと、そのイベントは新しいトランザクションの開始として扱われます。セッション途切れの検出などに活用されます。',
+    reference: 'Splunk Docs: transaction command - maxpause',
+    difficulty: 'medium',
+  },
+  {
+    id: 'ce-014',
+    domainId: 'correlating-events',
+    stem: '`transaction` コマンドで1トランザクションあたりのデフォルトの最大イベント数はどれか？',
+    choices: [
+      { key: 'A', text: '1000件', isCorrect: true },
+      { key: 'B', text: '100件', isCorrect: false },
+      { key: 'C', text: '上限なし', isCorrect: false },
+      { key: 'D', text: '10000件', isCorrect: false },
+    ],
+    explanation:
+      '`transaction` コマンドのデフォルトの最大イベント数（`maxevents`）は1000件です。この上限を超えた場合は新しいトランザクションが開始されます。大量のイベントを扱う場合は `maxevents` を適切に設定するか、`stats` コマンドの使用を検討してください。',
+    reference: 'Splunk Docs: transaction command - maxevents',
+    difficulty: 'medium',
+  },
+  {
+    id: 'ce-015',
+    domainId: 'correlating-events',
+    stem: '`transaction` コマンドでイベントをグループ化するために必要な要件はどれか？',
+    choices: [
+      { key: 'A', text: '1つ以上の共通フィールドで関連付けられていること', isCorrect: true },
+      { key: 'B', text: '同一のインデックスに格納されていること', isCorrect: false },
+      { key: 'C', text: '同一のソースタイプを持つこと', isCorrect: false },
+      { key: 'D', text: '連続した時間順に並んでいること（時間の空白がないこと）', isCorrect: false },
+    ],
+    explanation:
+      '`transaction` コマンドは1つ以上のフィールドで関連付けられたイベントをグループ化します。例: `| transaction session_id` で session_id が一致するイベントをまとめます。異なるインデックスやソースタイプのイベントも、共通フィールドがあればグループ化できます。',
+    reference: 'Splunk Docs: transaction command',
+    difficulty: 'easy',
+  },
+  {
+    id: 'ce-016',
+    domainId: 'correlating-events',
+    stem: '大量のデータを扱う場合、`transaction` より `stats` を推奨する理由はどれか？',
+    choices: [
+      { key: 'A', text: '`stats` はイベントを集計するだけで生データを保持しないため、メモリ効率が高く処理が速い', isCorrect: true },
+      { key: 'B', text: '`stats` はトランザクションの詳細情報（duration、eventcount）を提供できるが `transaction` はできない', isCorrect: false },
+      { key: 'C', text: '`stats` は分散処理できるが `transaction` はできない', isCorrect: false },
+      { key: 'D', text: '`stats` はすべての機能で `transaction` と同じ結果を生成する', isCorrect: false },
+    ],
+    explanation:
+      '`transaction` はグループ内のすべてのイベントの生データを保持するため、大量データではメモリを大量消費しパフォーマンスが低下します。`stats` は集計関数のみを計算して生データを捨てるため、はるかに高速かつ効率的です。単純なカウント・集計目的なら常に `stats` を優先してください。',
+    reference: 'Splunk Docs: Transaction vs stats',
+    difficulty: 'medium',
+  },
+  {
+    id: 'ce-017',
+    domainId: 'correlating-events',
+    stem: '`transaction` コマンドのデフォルトの `maxspan`（最大継続時間）はどれか？',
+    choices: [
+      { key: 'A', text: '制限なし（無制限）', isCorrect: true },
+      { key: 'B', text: '1時間', isCorrect: false },
+      { key: 'C', text: '24時間', isCorrect: false },
+      { key: 'D', text: '30分', isCorrect: false },
+    ],
+    explanation:
+      '`transaction` コマンドの `maxspan` のデフォルト値は無制限です。つまり `maxspan` を指定しない場合、フィールド値が一致するイベントはどれだけ時間が離れていても同一トランザクションにグループ化されます。時間範囲を制限したい場合は明示的に `maxspan=1h` などと指定します。',
+    reference: 'Splunk Docs: transaction command - maxspan',
+    difficulty: 'medium',
+  },
+  {
+    id: 'ce-018',
+    domainId: 'correlating-events',
+    stem: '`transaction` コマンドが自動的に生成するフィールドはどれか？（すべて正しいものを選べ）',
+    choices: [
+      { key: 'A', text: '`duration`（秒単位の継続時間）と `eventcount`（イベント数）', isCorrect: true },
+      { key: 'B', text: '`session_time` と `total_events`', isCorrect: false },
+      { key: 'C', text: '`elapsed` と `count`', isCorrect: false },
+      { key: 'D', text: '`timespan` と `event_total`', isCorrect: false },
+    ],
+    explanation:
+      '`transaction` コマンドはグループ化されたイベントに自動的に `duration`（最初のイベントから最後のイベントまでの秒数）と `eventcount`（グループ内のイベント数）の2フィールドを追加します。これらのフィールドを使って後続の `stats` や `where` でフィルタリング・集計できます。',
+    reference: 'Splunk Docs: transaction command output fields',
+    difficulty: 'easy',
+  },
+  {
+    id: 'ce-019',
+    domainId: 'correlating-events',
+    stem: '`| transaction JSESSIONID | search SD404K289O2F151` というクエリの目的として正しいのはどれか？',
+    choices: [
+      { key: 'A', text: 'JSESSIONID でグループ化したトランザクションの中から、特定セッション ID を含むトランザクションを検索する', isCorrect: true },
+      { key: 'B', text: 'SD404K289O2F151 という名前のトランザクションを作成する', isCorrect: false },
+      { key: 'C', text: 'JSESSIONID フィールドと SD404K289O2F151 フィールドの値を比較する', isCorrect: false },
+      { key: 'D', text: '2つのサーチを並列実行して結果を統合する', isCorrect: false },
+    ],
+    explanation:
+      '`| transaction JSESSIONID` で JSESSIONID フィールドの値ごとにイベントをグループ化します。その後 `| search SD404K289O2F151` でグループ化されたトランザクションの `_raw`（全イベントの連結テキスト）の中から "SD404K289O2F151" を含むトランザクションを絞り込みます。特定セッションに関連するすべてのイベントをまとめて調査する際に使います。',
+    reference: 'Splunk Docs: transaction command',
+    difficulty: 'hard',
+  },
+  {
+    id: 'ce-020',
+    domainId: 'correlating-events',
+    stem: '`transaction` コマンドを実行した後に使用できる変換コマンドはどれか？',
+    choices: [
+      { key: 'A', text: 'chart、timechart、stats、eventstats', isCorrect: true },
+      { key: 'B', text: 'chart と timechart のみ', isCorrect: false },
+      { key: 'C', text: 'stats のみ', isCorrect: false },
+      { key: 'D', text: 'transaction の後に変換コマンドは使用できない', isCorrect: false },
+    ],
+    explanation:
+      '`transaction` コマンドはイベントをグループ化しますが、その後のパイプラインでは通常の変換コマンドを使用できます。`chart`、`timechart`、`stats`、`eventstats` などで transaction の結果をさらに集計・可視化できます。例: `| transaction session_id | stats avg(duration) by host`',
+    reference: 'Splunk Docs: transaction command',
+    difficulty: 'medium',
+  },
+  {
+    id: 'ce-021',
+    domainId: 'correlating-events',
+    stem: 'サブサーチ（subsearch）の説明として正しいのはどれか？',
+    choices: [
+      { key: 'A', text: '角括弧 `[ ]` で囲まれた内側のサーチで、その結果が外側のサーチのフィルタ条件として使われる', isCorrect: true },
+      { key: 'B', text: 'パイプラインの途中で別のインデックスを検索する機能', isCorrect: false },
+      { key: 'C', text: 'スケジュールサーチを呼び出す機能', isCorrect: false },
+      { key: 'D', text: '複数のサーチを並列実行して結果をマージする', isCorrect: false },
+    ],
+    explanation:
+      'サブサーチは `[ ]` で囲み、外側のサーチに動的な条件を渡します。例: `index=main [search index=threat_intel | fields src_ip]` は threat_intel インデックスにある IP アドレスのリストを取得し、そのリストを使って main インデックスを絞り込みます。デフォルトのタイムアウトは60秒、最大結果件数は10,000件です。',
+    reference: 'Splunk Docs: Use a subsearch',
+    difficulty: 'medium',
+  },
+  {
+    id: 'ce-022',
+    domainId: 'correlating-events',
+    stem: '`appendcols` コマンドの説明として正しいのはどれか？',
+    choices: [
+      { key: 'A', text: '別のサーチの結果を列として現在の結果に追加する', isCorrect: true },
+      { key: 'B', text: '現在の結果に行を追加する', isCorrect: false },
+      { key: 'C', text: 'ルックアップの列を現在の結果に結合する', isCorrect: false },
+      { key: 'D', text: '指定フィールドの値を新しい列として展開する', isCorrect: false },
+    ],
+    explanation:
+      '`appendcols` はサブサーチの結果を列として追加します。例: `index=A | stats count by host | appendcols [search index=B | stats avg(bytes) by host]` で、2つの集計結果を横並びにできます。行数が合わない場合は null が入ります。',
+    reference: 'Splunk Docs: appendcols command',
+    difficulty: 'hard',
+  },
+  {
+    id: 'ce-023',
+    domainId: 'correlating-events',
+    stem: '`join` コマンドで `type=left` を指定するとどうなるか？',
+    choices: [
+      { key: 'A', text: 'メインのサーチ結果を全行保持し、サブサーチにマッチしない行は null で補完される', isCorrect: true },
+      { key: 'B', text: 'サブサーチの結果のみが返される', isCorrect: false },
+      { key: 'C', text: '両方の結果で一致した行のみが返される（内部結合）', isCorrect: false },
+      { key: 'D', text: 'メインとサブサーチの全行が返される（外部結合）', isCorrect: false },
+    ],
+    explanation:
+      '`join type=left <フィールド>` は SQL の LEFT OUTER JOIN と同等です。メインのサーチ（左側）の全行を保持し、サブサーチ（右側）にマッチしない行は null 値で補完されます。デフォルト（type 省略時）は内部結合（一致する行のみ）です。',
+    reference: 'Splunk Docs: join command',
+    difficulty: 'hard',
+  },
+  {
+    id: 'ce-024',
+    domainId: 'correlating-events',
+    stem: '`transaction` の `keepevents=true` オプションの説明として正しいのはどれか？',
+    choices: [
+      { key: 'A', text: 'グループ化されなかった単独のイベントも結果に残す', isCorrect: true },
+      { key: 'B', text: 'トランザクション内の全イベントを個別行として表示する', isCorrect: false },
+      { key: 'C', text: 'maxspan を超えたイベントもトランザクションに含める', isCorrect: false },
+      { key: 'D', text: 'トランザクションのメタデータ（duration など）を保持する', isCorrect: false },
+    ],
+    explanation:
+      '`keepevents=true` を指定すると、どのトランザクション条件にもマッチしなかった孤立したイベントも結果セットに含めます。デフォルトは `keepevents=false` で、少なくとも2件のイベントがグループ化されたものだけが結果に含まれます。',
+    reference: 'Splunk Docs: transaction command - keepevents option',
+    difficulty: 'hard',
+  },
+  {
+    id: 'ce-025',
+    domainId: 'correlating-events',
+    stem: 'サブサーチのデフォルト制限として正しいのはどれか？',
+    choices: [
+      { key: 'A', text: 'デフォルトのタイムアウトは60秒、最大結果件数は10,000件', isCorrect: true },
+      { key: 'B', text: 'デフォルトのタイムアウトは30秒、最大結果件数は5,000件', isCorrect: false },
+      { key: 'C', text: 'デフォルトのタイムアウトは120秒、最大結果件数は100,000件', isCorrect: false },
+      { key: 'D', text: 'タイムアウトなし、最大結果件数は1,000件', isCorrect: false },
+    ],
+    explanation:
+      'Splunk のサブサーチにはデフォルトで60秒のタイムアウトと最大10,000件の結果制限があります。これらの制限は `limits.conf` の `[subsearch]` セクションで変更可能ですが、変更には管理者権限が必要です。大量データが必要な場合はルックアップや `appendcols` の使用を検討します。',
+    reference: 'Splunk Docs: About subsearches',
+    difficulty: 'medium',
+  },
 ]
