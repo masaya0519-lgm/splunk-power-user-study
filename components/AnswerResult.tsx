@@ -1,4 +1,30 @@
+'use client'
+
+import { useState } from 'react'
 import { Question } from '@/lib/types'
+
+const INSULTS = [
+  'おいおい、Splunkの「S」も知らんのか？',
+  'これは流石にドキュメント読んだことないやろ',
+  '猿でも正解できる問題やぞ',
+  '試験代、もったいなかったね',
+  'SPLって略称すら知らんの？',
+  'まじか…救いようがない',
+  'Splunk公式が泣いてるよ',
+  '今すぐ退職届出してこい',
+  '研修のやり直しを強くお勧めします',
+  '君の知識、完全にゴミやん',
+  'これ間違える人類、初めて見た',
+  '天才的な間違え方だけはある',
+  'お願いだから誰かに教えないでくれ',
+  '君の上司に報告しようか？',
+  'その選択肢、なんで選んだの…理由が聞きたい',
+  '惜しくもなんともない',
+  'もしかして問題文読んでないのでは？',
+  'Splunk以前に日本語の問題では？',
+  '全問これだったら逆に才能',
+  'あと何回間違えれば覚えるんや',
+]
 
 interface Props {
   question: Question
@@ -8,6 +34,7 @@ interface Props {
 
 export default function AnswerResult({ question, chosenKey, isCorrect }: Props) {
   const correctChoice = question.choices.find((c) => c.isCorrect)!
+  const [insult] = useState(() => INSULTS[Math.floor(Math.random() * INSULTS.length)])
 
   return (
     <div
@@ -31,6 +58,9 @@ export default function AnswerResult({ question, chosenKey, isCorrect }: Props) 
         }}
       >
         <span>{isCorrect ? '✓ 正解！' : `✗ 不正解 (あなたの解答: ${chosenKey})`}</span>
+        {!isCorrect && (
+          <span style={{ fontSize: 12, fontWeight: 400, color: '#f87171', marginLeft: 8 }}>{insult}</span>
+        )}
       </div>
 
       {!isCorrect && (
