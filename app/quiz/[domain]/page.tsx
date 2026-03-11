@@ -144,6 +144,7 @@ export default function QuizPage() {
         }}
       >
         <QuizCard
+          key={currentIndex}
           question={currentQuestion}
           index={currentIndex}
           total={questions.length}
