@@ -44,7 +44,7 @@ export default function QuizPage() {
       const n = nParam === 'all' ? base.length : Math.min(parseInt(nParam ?? '10') || 10, base.length)
       pool = base.slice(0, n)
     }
-    setQuestions(pool)
+    setQuestions(pool.map((q) => ({ ...q, choices: shuffleArray(q.choices) })))
     setCurrentIndex(0)
     setAnswers([])
     setPhase('answering')
