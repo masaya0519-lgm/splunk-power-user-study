@@ -58,25 +58,40 @@ export default function AnswerResult({ question, chosenKey, isCorrect }: Props) 
         }}
       >
         <span>{isCorrect ? '✓ 正解！' : `✗ 不正解 (あなたの解答: ${chosenKey})`}</span>
-        {!isCorrect && (
-          <span style={{ fontSize: 12, fontWeight: 400, color: '#f87171', marginLeft: 8 }}>{insult}</span>
-        )}
       </div>
 
       {!isCorrect && (
-        <div
-          style={{
-            marginBottom: 12,
-            padding: '8px 12px',
-            borderRadius: 8,
-            backgroundColor: '#10b98118',
-            color: '#10b981',
-            fontWeight: 600,
-            fontSize: 14,
-          }}
-        >
-          正解: {correctChoice.key}. {correctChoice.text}
-        </div>
+        <>
+          <div
+            style={{
+              marginBottom: 12,
+              padding: '12px 16px',
+              borderRadius: 8,
+              backgroundColor: '#7f1d1d',
+              border: '1px solid #ef4444',
+              color: '#fca5a5',
+              fontWeight: 700,
+              fontSize: 16,
+              textAlign: 'center',
+              letterSpacing: '0.02em',
+            }}
+          >
+            💀 {insult}
+          </div>
+          <div
+            style={{
+              marginBottom: 12,
+              padding: '8px 12px',
+              borderRadius: 8,
+              backgroundColor: '#10b98118',
+              color: '#10b981',
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+          >
+            正解: {correctChoice.key}. {correctChoice.text}
+          </div>
+        </>
       )}
 
       <div>
