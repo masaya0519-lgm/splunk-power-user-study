@@ -5,7 +5,7 @@ import { DomainId, DomainProgress, ProgressStore } from './types'
 const STORAGE_KEY = 'splunk_progress_v1'
 
 function defaultProgress(domainId: DomainId): DomainProgress {
-  return { domainId, attempted: 0, correct: 0, lastAttempted: null, answeredIds: [] }
+  return { domainId, attempted: 0, correct: 0, lastAttempted: null, answeredIds: [], incorrectIds: [] }
 }
 
 function defaultStore(): ProgressStore {
@@ -37,12 +37,17 @@ export function recordAnswer(domainId: DomainId, questionId: string, isCorrect: 
   const store = loadProgress()
   const prev = store.domains[domainId] ?? defaultProgress(domainId)
   const alreadyAnswered = prev.answeredIds.includes(questionId)
+  const prevIncorrect = prev.incorrectIds ?? []
+  const newIncorrectIds = isCorrect
+    ? prevIncorrect.filter((id) => id !== questionId)
+    : prevIncorrect.includes(questionId) ? prevIncorrect : [...prevIncorrect, questionId]
   store.domains[domainId] = {
     ...prev,
     attempted: alreadyAnswered ? prev.attempted : prev.attempted + 1,
     correct: isCorrect && !alreadyAnswered ? prev.correct + 1 : prev.correct,
     lastAttempted: new Date().toISOString(),
     answeredIds: alreadyAnswered ? prev.answeredIds : [...prev.answeredIds, questionId],
+    incorrectIds: newIncorrectIds,
   }
   saveProgress(store)
 }

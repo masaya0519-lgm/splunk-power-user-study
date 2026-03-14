@@ -8,9 +8,10 @@ interface Props {
   domain: Domain
   progress: DomainProgress
   questionCount: number
+  wrongCount: number
 }
 
-export default function DomainCard({ domain, progress, questionCount }: Props) {
+export default function DomainCard({ domain, progress, questionCount, wrongCount }: Props) {
   const radius = 28
   const circumference = 2 * Math.PI * radius
   const pct = questionCount === 0 ? 0 : progress.attempted / questionCount
@@ -129,6 +130,29 @@ export default function DomainCard({ domain, progress, questionCount }: Props) {
           全問
         </Link>
       </div>
+
+      {/* Wrong filter button */}
+      {wrongCount > 0 && (
+        <Link
+          href={`/quiz/${domain.id}?filter=wrong`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            padding: '8px 0',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            backgroundColor: '#ef444418',
+            color: '#ef4444',
+            border: '1px solid #ef444444',
+            textDecoration: 'none',
+          }}
+        >
+          × 苦手問題のみ（{wrongCount}問）
+        </Link>
+      )}
     </div>
   )
 }

@@ -41,6 +41,7 @@ export interface DomainProgress {
   correct: number
   lastAttempted: string | null
   answeredIds: string[]
+  incorrectIds: string[]
 }
 
 export interface ProgressStore {

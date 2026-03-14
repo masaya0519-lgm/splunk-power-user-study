@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { DOMAINS, Question, SessionAnswer, DomainId } from '@/lib/types'
 import { getQuestionsByDomain, shuffleArray, ALL_QUESTIONS } from '@/lib/questions'
-import { recordAnswer } from '@/lib/progress'
+import { recordAnswer, getDomainProgress } from '@/lib/progress'
 import QuizCard from '@/components/QuizCard'
 import ScoreBadge from '@/components/ScoreBadge'
 import Link from 'next/link'
@@ -17,6 +17,7 @@ export default function QuizPage() {
   const domainSlug = params.domain as string
   const isExamMode = domainSlug === 'exam'
   const nParam = searchParams.get('n')
+  const isWrongFilter = searchParams.get('filter') === 'wrong'
 
   const domain = DOMAINS.find((d) => d.id === domainSlug)
 
@@ -41,8 +42,13 @@ export default function QuizPage() {
     } else {
       if (!domain) return
       const base = shuffleArray(getQuestionsByDomain(domain.id))
-      const n = nParam === 'all' ? base.length : Math.min(parseInt(nParam ?? '10') || 10, base.length)
-      pool = base.slice(0, n)
+      if (isWrongFilter) {
+        const incorrectIds = getDomainProgress(domain.id as DomainId).incorrectIds ?? []
+        pool = base.filter((q) => incorrectIds.includes(q.id))
+      } else {
+        const n = nParam === 'all' ? base.length : Math.min(parseInt(nParam ?? '10') || 10, base.length)
+        pool = base.slice(0, n)
+      }
     }
     const KEYS = ['A', 'B', 'C', 'D'] as const
     setQuestions(pool.map((q) => ({
@@ -93,10 +99,16 @@ export default function QuizPage() {
     )
   }
 
-  if (questions.length === 0) {
+  const [ready, setReady] = useState(false)
+  useEffect(() => { setReady(true) }, [])
+
+  if (!ready || questions.length === 0) {
     return (
       <div style={{ maxWidth: 700, margin: '80px auto', textAlign: 'center', color: '#94a3b8' }}>
-        <p>問題を読み込み中...</p>
+        {ready && isWrongFilter
+          ? <><p style={{ fontSize: 16, marginBottom: 12 }}>×問題がありません 🎉</p><Link href="/" style={{ color: '#6366f1' }}>ホームに戻る</Link></>
+          : <p>問題を読み込み中...</p>
+        }
       </div>
     )
   }
@@ -134,7 +146,7 @@ export default function QuizPage() {
             borderRadius: 8,
           }}
         >
-          {isExamMode ? '模擬試験モード' : domain?.label}
+          {isExamMode ? '模擬試験モード' : domain?.label}{isWrongFilter && <span style={{ marginLeft: 8, color: '#ef4444' }}>× 苦手問題</span>}
         </span>
       </div>
 

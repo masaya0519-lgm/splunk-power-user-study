@@ -21,6 +21,7 @@ export default function HomePage() {
   const totalQuestions = DOMAINS.reduce((s, d) => s + getQuestionsByDomain(d.id).length, 0)
   const totalAttempted = Object.values(progressMap).reduce((s, p) => s + (p?.attempted ?? 0), 0)
   const totalCorrect = Object.values(progressMap).reduce((s, p) => s + (p?.correct ?? 0), 0)
+  const totalWrong = Object.values(progressMap).reduce((s, p) => s + (p?.incorrectIds?.length ?? 0), 0)
 
   function handleReset() {
     if (confirm('全進捗をリセットしますか？')) {
@@ -86,6 +87,12 @@ export default function HomePage() {
               <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>全体正解率</div>
               <ScoreBadge correct={totalCorrect} total={totalAttempted} size="md" />
             </div>
+            {totalWrong > 0 && (
+              <div style={{ padding: '6px 12px', borderRadius: 8, backgroundColor: '#ef444418', border: '1px solid #ef444444' }}>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 2 }}>苦手問題</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#ef4444' }}>{totalWrong}問</div>
+              </div>
+            )}
             <div style={{ flex: 1, minWidth: 200 }}>
               <div
                 style={{
@@ -159,8 +166,9 @@ export default function HomePage() {
             answeredIds: [],
           }
           const qCount = getQuestionsByDomain(domain.id).length
+          const wrongCount = progress.incorrectIds?.length ?? 0
           return (
-            <DomainCard key={domain.id} domain={domain} progress={progress} questionCount={qCount} />
+            <DomainCard key={domain.id} domain={domain} progress={progress} questionCount={qCount} wrongCount={wrongCount} />
           )
         })}
       </div>
